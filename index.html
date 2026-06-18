@@ -50,7 +50,18 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
 
-  @media(max-width:440px){body{padding:16px 8px}}
+  /* ── Mobile: strip the phone-frame chrome, fill viewport ── */
+  @media(max-width:480px){
+    body{padding:0;background:#0e0e17;}
+    #phone{
+      width:100%!important;max-width:100%!important;
+      height:100dvh!important;max-height:100dvh!important;
+      border-radius:0!important;padding:6px!important;
+      box-shadow:none!important;
+    }
+    #screen{border-radius:16px!important;}
+    #field{margin:6px 10px 4px!important;padding:14px 12px 12px!important;}
+  }
 </style>
 </head>
 <body>
@@ -63,8 +74,8 @@
 </div>
 
 <!-- Phone Frame -->
-<div style="position:relative;z-index:1;width:392px;max-width:94vw;height:828px;max-height:90vh;border-radius:54px;padding:13px;background:linear-gradient(160deg,#26233a,#101019 60%);box-shadow:0 0 0 1px rgba(124,92,255,.18),0 30px 80px rgba(0,0,0,.6),inset 0 1px 1px rgba(255,255,255,.06)">
-<div style="position:relative;width:100%;height:100%;border-radius:43px;overflow:hidden;background:linear-gradient(180deg,#0e0e17,#0b0b12);display:flex;flex-direction:column">
+<div id="phone" style="position:relative;z-index:1;width:392px;max-width:94vw;height:828px;max-height:90vh;border-radius:54px;padding:13px;background:linear-gradient(160deg,#26233a,#101019 60%);box-shadow:0 0 0 1px rgba(124,92,255,.18),0 30px 80px rgba(0,0,0,.6),inset 0 1px 1px rgba(255,255,255,.06)">
+<div id="screen" style="position:relative;width:100%;height:100%;border-radius:43px;overflow:hidden;background:linear-gradient(180deg,#0e0e17,#0b0b12);display:flex;flex-direction:column">
 
   <!-- Status bar -->
   <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 26px 4px;flex:0 0 auto">
@@ -113,12 +124,6 @@
       <div>
         <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:#bdb9d6;letter-spacing:.14em;text-transform:uppercase">Explore my work</div>
         <div style="font-size:11px;color:#74718c;margin-top:3px">Hover a tile · dwell to open</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.35);border:1px solid rgba(124,92,255,.18);padding:4px 9px;border-radius:8px;flex-shrink:0">
-        <span style="font-size:9px;color:#49454f;letter-spacing:.06em;font-weight:700">X</span>
-        <span id="gx" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:#7c5cff;letter-spacing:.04em;min-width:26px;text-align:right">---</span>
-        <span style="font-size:9px;color:#49454f;letter-spacing:.06em;font-weight:700;margin-left:4px">Y</span>
-        <span id="gy" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:#7c5cff;letter-spacing:.04em;min-width:26px;text-align:right">---</span>
       </div>
     </div>
 
@@ -486,8 +491,6 @@ const field = document.getElementById('field');
 const dot   = document.getElementById('dot');
 const ring  = document.getElementById('ring');
 const arc   = document.getElementById('arc');
-const gx    = document.getElementById('gx');
-const gy    = document.getElementById('gy');
 
 let phase        = 'idle'; // idle | move | dwell | open
 let dwellingTile = null;
@@ -507,8 +510,6 @@ field.addEventListener('pointermove', e => {
   dot.style.top     = ny + 'px';
   dot.style.opacity = '1';
 
-  gx.textContent = Math.round(nx);
-  gy.textContent = Math.round(ny);
 
   const dx = nx - ptr.x, dy = ny - ptr.y;
   if (Math.sqrt(dx*dx + dy*dy) >= MOVE_THR) ptr.lastMovedAt = Date.now();
@@ -524,7 +525,6 @@ field.addEventListener('pointermove', e => {
 field.addEventListener('pointerleave', () => {
   ptr.inside = false; ptr.tile = null;
   dot.style.opacity = '0';
-  gx.textContent = '---'; gy.textContent = '---';
   resetDwell();
   phase = 'idle';
 });
