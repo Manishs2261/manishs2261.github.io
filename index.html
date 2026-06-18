@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manish Sahu · Flutter Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:radial-gradient(120% 120% at 50% -10%,#15122a 0%,#0a0a12 55%,#07070d 100%);
+    min-height:100vh;display:grid;place-items:center;
+    padding:36px 16px;position:relative;overflow:hidden;color:#e9e7f5;
+  }
+
+  /* Panel scrollbar */
+  .pbody::-webkit-scrollbar{width:5px}
+  .pbody::-webkit-scrollbar-thumb{background:rgba(124,92,255,.4);border-radius:3px}
+
+  /* Tile hover/press */
+  [data-tile]{
+    transition:transform .25s cubic-bezier(.2,.9,.3,1.3),box-shadow .25s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  [data-tile]:hover{
+    transform:scale(1.04) translateY(-3px);
+    box-shadow:0 14px 30px -8px var(--ac,rgba(124,92,255,.5));
+  }
+  [data-tile]:active{transform:scale(.96) translateY(0)}
+
+  /* Panel slide */
+  .panel{
+    position:absolute;inset:0;border-radius:43px;
+    display:flex;flex-direction:column;
+    transform:translateY(100%);opacity:0;pointer-events:none;
+    transition:transform .5s cubic-bezier(.05,.7,.1,1),opacity .3s ease;
+    z-index:12;overflow:hidden;
+  }
+  .panel.open{transform:translateY(0);opacity:1;pointer-events:auto}
+
+  /* Keyframes */
+  @keyframes blob{0%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.12)}100%{transform:translate(-30px,40px) scale(.96)}}
+  @keyframes gaze{0%{transform:translate(-50%,-50%) scale(1);opacity:.55}100%{transform:translate(-50%,-50%) scale(1.7);opacity:.06}}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.55);opacity:.45}}
+  @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(800%)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+
+  @media(max-width:440px){body{padding:16px 8px}}
+</style>
+</head>
+<body>
+
+<!-- Aurora blobs -->
+<div style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden">
+  <div style="position:absolute;width:560px;height:560px;border-radius:50%;background:#ff2e93;filter:blur(120px);opacity:.16;top:-160px;left:-120px;animation:blob 22s ease-in-out infinite alternate"></div>
+  <div style="position:absolute;width:520px;height:520px;border-radius:50%;background:#22d3ee;filter:blur(120px);opacity:.14;bottom:-180px;right:-140px;animation:blob 26s ease-in-out infinite alternate-reverse"></div>
+  <div style="position:absolute;width:380px;height:380px;border-radius:50%;background:#7c5cff;filter:blur(110px);opacity:.16;top:42%;left:54%;animation:blob 30s ease-in-out infinite alternate"></div>
+</div>
+
+<!-- Phone Frame -->
+<div style="position:relative;z-index:1;width:392px;max-width:94vw;height:828px;max-height:90vh;border-radius:54px;padding:13px;background:linear-gradient(160deg,#26233a,#101019 60%);box-shadow:0 0 0 1px rgba(124,92,255,.18),0 30px 80px rgba(0,0,0,.6),inset 0 1px 1px rgba(255,255,255,.06)">
+<div style="position:relative;width:100%;height:100%;border-radius:43px;overflow:hidden;background:linear-gradient(180deg,#0e0e17,#0b0b12);display:flex;flex-direction:column">
+
+  <!-- Status bar -->
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 26px 4px;flex:0 0 auto">
+    <span id="clk" style="font-size:14px;font-weight:600;color:#e9e7f5;letter-spacing:.01em">9:41</span>
+    <div style="display:flex;align-items:center;gap:7px">
+      <span style="font-size:11px;font-weight:700;color:#cfcbe6;letter-spacing:.04em">5G</span>
+      <div style="display:flex;gap:2px;align-items:flex-end;height:11px">
+        <div style="width:3px;height:5px;border-radius:1px;background:#cfcbe6"></div>
+        <div style="width:3px;height:7px;border-radius:1px;background:#cfcbe6"></div>
+        <div style="width:3px;height:9px;border-radius:1px;background:#cfcbe6"></div>
+        <div style="width:3px;height:11px;border-radius:1px;background:#7c5cff"></div>
+      </div>
+      <div style="width:22px;height:11px;border:1.5px solid #cfcbe6;border-radius:3px;padding:1.5px;display:flex">
+        <div style="flex:1;background:#2dd46a;border-radius:1px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 22px 6px;flex:0 0 auto">
+    <div style="display:flex;align-items:center;gap:11px">
+      <!-- Eye logo -->
+      <div style="width:44px;height:44px;border-radius:15px;background:linear-gradient(150deg,#7c5cff,#ff2e93);display:grid;place-items:center;box-shadow:0 8px 22px -6px rgba(124,92,255,.7)">
+        <div style="width:25px;height:17px;border-radius:50%;background:#0b0b12;display:grid;place-items:center;animation:blink 5.5s ease-in-out infinite">
+          <div style="width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#22d3ee 55%,#7c5cff);position:relative">
+            <div style="position:absolute;width:4px;height:4px;border-radius:50%;background:#0b0b12;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:-.01em;line-height:1.05">Manish Sahu</div>
+        <div style="font-size:11px;color:#9b97b5;letter-spacing:.04em;margin-top:3px;font-weight:600">FLUTTER DEVELOPER</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;background:rgba(45,212,106,.12);border:1px solid rgba(45,212,106,.32);padding:6px 11px;border-radius:999px">
+      <span style="width:7px;height:7px;border-radius:50%;background:#2dd46a;animation:pulse 1.8s ease-in-out infinite"></span>
+      <span style="font-size:11px;font-weight:700;color:#5ee08e;letter-spacing:.04em">TRACKING</span>
+    </div>
+  </div>
+
+  <!-- Gaze field -->
+  <div id="field" style="position:relative;flex:1 1 auto;margin:8px 16px 6px;border-radius:30px;background:linear-gradient(180deg,rgba(124,92,255,.07),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.06);overflow:hidden;padding:18px 16px 18px">
+
+    <!-- Field header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:#bdb9d6;letter-spacing:.14em;text-transform:uppercase">Explore my work</div>
+        <div style="font-size:11px;color:#74718c;margin-top:3px">Hover a tile · dwell to open</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.35);border:1px solid rgba(124,92,255,.18);padding:4px 9px;border-radius:8px;flex-shrink:0">
+        <span style="font-size:9px;color:#49454f;letter-spacing:.06em;font-weight:700">X</span>
+        <span id="gx" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:#7c5cff;letter-spacing:.04em;min-width:26px;text-align:right">---</span>
+        <span style="font-size:9px;color:#49454f;letter-spacing:.06em;font-weight:700;margin-left:4px">Y</span>
+        <span id="gy" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:#7c5cff;letter-spacing:.04em;min-width:26px;text-align:right">---</span>
+      </div>
+    </div>
+
+    <!-- Tile grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px">
+
+      <button data-tile data-panel="about" data-ac="#7c5cff" onclick="openPanel('about')" style="--ac:rgba(124,92,255,.7);position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;min-height:118px;padding:15px;border:1px solid rgba(124,92,255,.34);border-radius:22px;background:linear-gradient(150deg,rgba(124,92,255,.18),rgba(255,255,255,.02));cursor:pointer">
+        <span data-s style="position:absolute;top:13px;right:13px;width:9px;height:9px;border-radius:50%;background:#3a3a48;opacity:.3;transition:all .3s ease"></span>
+        <div style="width:46px;height:46px;border-radius:14px;background:rgba(124,92,255,.22);display:grid;place-items:center;font-size:24px">👤</div>
+        <div><div style="font-size:16px;font-weight:700;color:#fff">About</div><div style="font-size:11px;color:#867ab0;margin-top:1px">Who I am</div></div>
+      </button>
+
+      <button data-tile data-panel="skills" data-ac="#22d3ee" onclick="openPanel('skills')" style="--ac:rgba(34,211,238,.7);position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;min-height:118px;padding:15px;border:1px solid rgba(34,211,238,.32);border-radius:22px;background:linear-gradient(150deg,rgba(34,211,238,.16),rgba(255,255,255,.02));cursor:pointer">
+        <span data-s style="position:absolute;top:13px;right:13px;width:9px;height:9px;border-radius:50%;background:#3a3a48;opacity:.3;transition:all .3s ease"></span>
+        <div style="width:46px;height:46px;border-radius:14px;background:rgba(34,211,238,.2);display:grid;place-items:center;font-size:24px">⚡</div>
+        <div><div style="font-size:16px;font-weight:700;color:#fff">Skills</div><div style="font-size:11px;color:#5a93a0;margin-top:1px">Tech I use</div></div>
+      </button>
+
+      <button data-tile data-panel="exp" data-ac="#ff2e93" onclick="openPanel('exp')" style="--ac:rgba(255,46,147,.7);position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;min-height:118px;padding:15px;border:1px solid rgba(255,46,147,.32);border-radius:22px;background:linear-gradient(150deg,rgba(255,46,147,.16),rgba(255,255,255,.02));cursor:pointer">
+        <span data-s style="position:absolute;top:13px;right:13px;width:9px;height:9px;border-radius:50%;background:#3a3a48;opacity:.3;transition:all .3s ease"></span>
+        <div style="width:46px;height:46px;border-radius:14px;background:rgba(255,46,147,.2);display:grid;place-items:center;font-size:24px">💼</div>
+        <div><div style="font-size:16px;font-weight:700;color:#fff">Experience</div><div style="font-size:11px;color:#9a6280;margin-top:1px">Where I've worked</div></div>
+      </button>
+
+      <button data-tile data-panel="projects" data-ac="#2dd46a" onclick="openPanel('projects')" style="--ac:rgba(45,212,106,.7);position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;min-height:118px;padding:15px;border:1px solid rgba(45,212,106,.32);border-radius:22px;background:linear-gradient(150deg,rgba(45,212,106,.16),rgba(255,255,255,.02));cursor:pointer">
+        <span data-s style="position:absolute;top:13px;right:13px;width:9px;height:9px;border-radius:50%;background:#3a3a48;opacity:.3;transition:all .3s ease"></span>
+        <div style="width:46px;height:46px;border-radius:14px;background:rgba(45,212,106,.2);display:grid;place-items:center;font-size:24px">🚀</div>
+        <div><div style="font-size:16px;font-weight:700;color:#fff">Projects</div><div style="font-size:11px;color:#5a9a72;margin-top:1px">What I've shipped</div></div>
+      </button>
+
+      <button data-tile data-panel="edu" data-ac="#ffb020" onclick="openPanel('edu')" style="--ac:rgba(255,176,32,.7);position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;min-height:118px;padding:15px;border:1px solid rgba(255,176,32,.32);border-radius:22px;background:linear-gradient(150deg,rgba(255,176,32,.16),rgba(255,255,255,.02));cursor:pointer">
+        <span data-s style="position:absolute;top:13px;right:13px;width:9px;height:9px;border-radius:50%;background:#3a3a48;opacity:.3;transition:all .3s ease"></span>
+        <div style="width:46px;height:46px;border-radius:14px;background:rgba(255,176,32,.2);display:grid;place-items:center;font-size:24px">🎓</div>
+        <div><div style="font-size:16px;font-weight:700;color:#fff">Education</div><div style="font-size:11px;color:#9a8a62;margin-top:1px">Background</div></div>
+      </button>
+
+      <button data-tile data-panel="contact" data-ac="#ff6a3d" onclick="openPanel('contact')" style="--ac:rgba(255,106,61,.7);position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;min-height:118px;padding:15px;border:1px solid rgba(255,106,61,.32);border-radius:22px;background:linear-gradient(150deg,rgba(255,106,61,.16),rgba(255,255,255,.02));cursor:pointer">
+        <span data-s style="position:absolute;top:13px;right:13px;width:9px;height:9px;border-radius:50%;background:#3a3a48;opacity:.3;transition:all .3s ease"></span>
+        <div style="width:46px;height:46px;border-radius:14px;background:rgba(255,106,61,.2);display:grid;place-items:center;font-size:24px">✉️</div>
+        <div><div style="font-size:16px;font-weight:700;color:#fff">Contact</div><div style="font-size:11px;color:#9a7058;margin-top:1px">Reach me</div></div>
+      </button>
+
+    </div><!-- /grid -->
+
+    <!-- Scanline -->
+    <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:30px;mix-blend-mode:screen">
+      <div style="position:absolute;left:0;right:0;height:120px;background:linear-gradient(180deg,transparent,rgba(34,211,238,.10),transparent);animation:scan 4.2s linear infinite"></div>
+    </div>
+
+    <!-- Dwell ring (repositioned by JS) -->
+    <div id="ring" style="position:absolute;left:50%;top:50%;width:120px;height:120px;transform:translate(-50%,-50%);opacity:0;pointer-events:none;z-index:7;transition:opacity .18s ease">
+      <svg viewBox="0 0 120 120" width="120" height="120" style="display:block">
+        <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3"></circle>
+        <circle id="arc" cx="60" cy="60" r="54" fill="none" stroke="#7c5cff" stroke-width="4" stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="339.292" transform="rotate(-90 60 60)"></circle>
+      </svg>
+    </div>
+
+    <!-- Gaze dot -->
+    <div id="dot" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;pointer-events:none;will-change:left,top;opacity:0;transition:opacity .2s ease">
+      <div style="position:absolute;left:50%;top:50%;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.85),transparent 70%);animation:gaze 1.5s ease-out infinite"></div>
+      <div style="position:relative;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#bfe9ff 32%,#7c5cff 80%);box-shadow:0 0 14px rgba(124,92,255,.9),0 0 0 2px rgba(255,255,255,.45);display:grid;place-items:center">
+        <div style="width:6px;height:6px;border-radius:50%;background:#15122a"></div>
+      </div>
+    </div>
+
+    <!-- Calibration overlay -->
+    <div id="calib" style="position:absolute;inset:0;border-radius:30px;background:rgba(8,8,16,.62);backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:9">
+      <div style="width:52px;height:52px;border-radius:50%;border:4px solid rgba(124,92,255,.25);border-top-color:#7c5cff;animation:spin .9s linear infinite"></div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:#e9e7f5;letter-spacing:.04em">Calibrating gaze…</div>
+      <div style="font-size:11px;color:#8b88a3">Follow the points with your eyes</div>
+    </div>
+
+  </div><!-- /field -->
+
+  <!-- Footer -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 24px 22px;flex:0 0 auto">
+    <div style="display:flex;align-items:center;gap:18px">
+      <div>
+        <div style="font-size:18px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:#fff;line-height:1">99<span style="font-size:12px;color:#8b88a3">%</span></div>
+        <div style="font-size:9px;color:#74718c;letter-spacing:.12em;margin-top:2px">ACCURACY</div>
+      </div>
+      <div style="width:1px;height:26px;background:rgba(255,255,255,.08)"></div>
+      <div>
+        <div id="dlbl" style="font-size:18px;font-weight:800;font-family:'Space Grotesk',sans-serif;color:#fff;line-height:1">1.1s</div>
+        <div style="font-size:9px;color:#74718c;letter-spacing:.12em;margin-top:2px">DWELL TIME</div>
+      </div>
+    </div>
+    <button onclick="recalibrate()" style="display:flex;align-items:center;gap:7px;padding:11px 16px;border:none;border-radius:999px;background:linear-gradient(135deg,#7c5cff,#ff2e93);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px -8px rgba(124,92,255,.8);-webkit-tap-highlight-color:transparent">
+      <span style="font-size:14px">◎</span>Recalibrate
+    </button>
+  </div>
+
+  <!-- ══════════ PANELS ══════════ -->
+
+  <!-- ABOUT -->
+  <div id="p-about" class="panel" style="background:linear-gradient(180deg,#13101f,#0b0b12)">
+    <div style="display:flex;justify-content:center;padding:10px 0 2px"><div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 20px 12px;flex:0 0 auto">
+      <button onclick="closePanel()" style="width:38px;height:38px;border-radius:50%;border:none;background:rgba(124,92,255,.18);color:#b4a6ff;font-size:22px;cursor:pointer;display:grid;place-items:center">‹</button>
+      <div style="display:flex;align-items:center;gap:9px"><span style="font-size:20px">👤</span><span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">About Me</span></div>
+    </div>
+    <div class="pbody" style="flex:1 1 auto;overflow-y:auto;padding:6px 22px 26px">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff">Manish Sahu</div>
+      <div style="color:#b4a6ff;font-size:11px;letter-spacing:.13em;margin:5px 0 16px;font-weight:600">FLUTTER · DART · FIREBASE · CLEAN ARCHITECTURE</div>
+      <div style="display:flex;gap:9px;margin-bottom:18px">
+        <div style="flex:1;background:rgba(124,92,255,.12);border:1px solid rgba(124,92,255,.2);border-radius:16px;padding:13px 6px;text-align:center"><div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#b4a6ff;line-height:1">2+</div><div style="font-size:9px;color:#8b88a3;letter-spacing:.06em;margin-top:4px">YRS EXP</div></div>
+        <div style="flex:1;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.2);border-radius:16px;padding:13px 6px;text-align:center"><div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#5fd6e6;line-height:1">2</div><div style="font-size:9px;color:#8b88a3;letter-spacing:.06em;margin-top:4px">STORE APPS</div></div>
+        <div style="flex:1;background:rgba(255,46,147,.1);border:1px solid rgba(255,46,147,.2);border-radius:16px;padding:13px 6px;text-align:center"><div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;color:#ff6fb0;line-height:1">7+</div><div style="font-size:9px;color:#8b88a3;letter-spacing:.06em;margin-top:4px">MODULES</div></div>
+      </div>
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Summary</div>
+      <p style="color:#c6c2d6;font-size:14px;line-height:1.6;margin-bottom:12px">Flutter Developer with <b style="color:#fff">2+ years</b> shipping production-grade <b style="color:#fff">Android &amp; iOS</b> apps for HR-management and crowdfunding domains — delivered to the Play Store and App Store serving real users.</p>
+      <p style="color:#c6c2d6;font-size:14px;line-height:1.6;margin-bottom:16px">Strong in <b style="color:#fff">Flutter, Dart, Firebase</b>, scalable state management (BLoC, GetX, Provider), RESTful APIs, real-time Socket.io and Google Maps. Focused on clean architecture, performance and crash-free releases.</p>
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Current role</div>
+      <p style="color:#c6c2d6;font-size:14px;line-height:1.6">Flutter Developer at <b style="color:#fff">FixingDots</b> — building the FixHR Employee Management App with real-time GPS tracking, BLoC architecture and Socket.io. <b style="color:#fff">Open to relocation.</b></p>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div id="p-skills" class="panel" style="background:linear-gradient(180deg,#0c1820,#0b0b12)">
+    <div style="display:flex;justify-content:center;padding:10px 0 2px"><div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 20px 12px;flex:0 0 auto">
+      <button onclick="closePanel()" style="width:38px;height:38px;border-radius:50%;border:none;background:rgba(34,211,238,.16);color:#7bdcea;font-size:22px;cursor:pointer;display:grid;place-items:center">‹</button>
+      <div style="display:flex;align-items:center;gap:9px"><span style="font-size:20px">⚡</span><span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">Skills</span></div>
+    </div>
+    <div class="pbody" style="flex:1 1 auto;overflow-y:auto;padding:6px 22px 26px">
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Languages</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Dart</span>
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Java</span>
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Kotlin</span>
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Swift</span>
+      </div>
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">State Management</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">BLoC</span>
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Provider</span>
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">GetX</span>
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Riverpod</span>
+        <span style="background:rgba(124,92,255,.14);color:#c9bfff;border:1px solid rgba(124,92,255,.28);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Freezed</span>
+      </div>
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Backend &amp; Cloud</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
+        <span style="background:rgba(34,211,238,.12);color:#9fe8f3;border:1px solid rgba(34,211,238,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Firebase Auth</span>
+        <span style="background:rgba(34,211,238,.12);color:#9fe8f3;border:1px solid rgba(34,211,238,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Firestore</span>
+        <span style="background:rgba(34,211,238,.12);color:#9fe8f3;border:1px solid rgba(34,211,238,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">FCM</span>
+        <span style="background:rgba(34,211,238,.12);color:#9fe8f3;border:1px solid rgba(34,211,238,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Cloud Functions</span>
+        <span style="background:rgba(34,211,238,.12);color:#9fe8f3;border:1px solid rgba(34,211,238,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">REST APIs</span>
+      </div>
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Tools &amp; Integrations</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px">
+        <span style="background:rgba(255,46,147,.1);color:#ff97c4;border:1px solid rgba(255,46,147,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Google Maps SDK</span>
+        <span style="background:rgba(255,46,147,.1);color:#ff97c4;border:1px solid rgba(255,46,147,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Socket.io</span>
+        <span style="background:rgba(255,46,147,.1);color:#ff97c4;border:1px solid rgba(255,46,147,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Dio</span>
+        <span style="background:rgba(255,46,147,.1);color:#ff97c4;border:1px solid rgba(255,46,147,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Stripe</span>
+        <span style="background:rgba(255,46,147,.1);color:#ff97c4;border:1px solid rgba(255,46,147,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Crashlytics</span>
+        <span style="background:rgba(255,46,147,.1);color:#ff97c4;border:1px solid rgba(255,46,147,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Shorebird</span>
+        <span style="background:rgba(255,46,147,.1);color:#ff97c4;border:1px solid rgba(255,46,147,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">get_It</span>
+      </div>
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Deployment</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px">
+        <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Play Console</span>
+        <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">App Store Connect</span>
+        <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">CI/CD</span>
+      </div>
+      <div style="color:#7bdcea;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:12px">Proficiency</div>
+      <div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:#c6c2d6"><span>Flutter / Dart</span><span style="color:#b4a6ff;font-weight:700">95%</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="height:100%;width:95%;background:linear-gradient(90deg,#7c5cff,#ff2e93);border-radius:4px"></div></div></div>
+      <div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:#c6c2d6"><span>Firebase</span><span style="color:#b4a6ff;font-weight:700">90%</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="height:100%;width:90%;background:linear-gradient(90deg,#7c5cff,#ff2e93);border-radius:4px"></div></div></div>
+      <div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:#c6c2d6"><span>BLoC / State Mgmt</span><span style="color:#b4a6ff;font-weight:700">88%</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="height:100%;width:88%;background:linear-gradient(90deg,#7c5cff,#ff2e93);border-radius:4px"></div></div></div>
+      <div style="margin-bottom:4px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:#c6c2d6"><span>REST APIs / Dio</span><span style="color:#b4a6ff;font-weight:700">85%</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="height:100%;width:85%;background:linear-gradient(90deg,#7c5cff,#ff2e93);border-radius:4px"></div></div></div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div id="p-exp" class="panel" style="background:linear-gradient(180deg,#1a0f18,#0b0b12)">
+    <div style="display:flex;justify-content:center;padding:10px 0 2px"><div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 20px 12px;flex:0 0 auto">
+      <button onclick="closePanel()" style="width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,46,147,.16);color:#ff97c4;font-size:22px;cursor:pointer;display:grid;place-items:center">‹</button>
+      <div style="display:flex;align-items:center;gap:9px"><span style="font-size:20px">💼</span><span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">Experience</span></div>
+    </div>
+    <div class="pbody" style="flex:1 1 auto;overflow-y:auto;padding:6px 22px 26px">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px;margin-bottom:12px">
+        <div style="font-size:15px;font-weight:700;color:#fff">Flutter Developer</div>
+        <div style="color:#ff97c4;font-size:11px;letter-spacing:.06em;margin:3px 0 2px;font-weight:600">FIXINGDOTS · RAIPUR &nbsp;·&nbsp; NOV 2024 – PRESENT</div>
+        <div style="color:#9b97b5;font-size:12px;font-style:italic;margin-bottom:11px">FixHR Employee Management App</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span>Built 7+ core modules: real-time GPS tracking, calendar, leave/miss-punch, gate pass, travel &amp; daily allowance</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span>Google Maps SDK with location search and distance-based allowance calculation</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span>Scalable state management with <b style="color:#fff">BLoC</b> &amp; <b style="color:#fff">Freezed</b>; real-time <b style="color:#fff">Socket.io</b>, Dio, Push Notifications &amp; Crashlytics</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span>End-to-end deployment on <b style="color:#fff">Google Play</b> &amp; <b style="color:#fff">App Store</b>, reducing live crash rate</li>
+        </ul>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px">
+        <div style="font-size:15px;font-weight:700;color:#fff">Flutter Developer</div>
+        <div style="color:#ff97c4;font-size:11px;letter-spacing:.06em;margin:3px 0 2px;font-weight:600">RIVERHOUSE TECHNOLOGY · BHILAI &nbsp;·&nbsp; MAR – NOV 2024</div>
+        <div style="color:#9b97b5;font-size:12px;font-style:italic;margin-bottom:11px">Collegiate Backer — Crowdfunding for Athletes</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span>Built crowdfunding platform for athletes from design through release</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span><b style="color:#fff">Firebase</b> auth, secure data handling and cloud media storage for profiles &amp; campaigns</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span>Integrated <b style="color:#fff">Stripe</b> payment flows for secure fund transfers between backers and athletes</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#ff6fb0">▹</span>Translated product requirements into clean, mission-aligned UI with close UX collaboration</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div id="p-projects" class="panel" style="background:linear-gradient(180deg,#0c1a12,#0b0b12)">
+    <div style="display:flex;justify-content:center;padding:10px 0 2px"><div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 20px 12px;flex:0 0 auto">
+      <button onclick="closePanel()" style="width:38px;height:38px;border-radius:50%;border:none;background:rgba(45,212,106,.16);color:#7fe6a3;font-size:22px;cursor:pointer;display:grid;place-items:center">‹</button>
+      <div style="display:flex;align-items:center;gap:9px"><span style="font-size:20px">🚀</span><span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">Projects</span></div>
+    </div>
+    <div class="pbody" style="flex:1 1 auto;overflow-y:auto;padding:6px 22px 26px">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px;margin-bottom:12px">
+        <span style="color:#7fe6a3;font-size:11px;font-weight:800;letter-spacing:.1em">01</span>
+        <div style="font-size:16px;font-weight:700;color:#fff;margin-top:3px">Appixo</div>
+        <div style="color:#7fe6a3;font-size:11px;letter-spacing:.06em;margin:2px 0 10px;font-weight:600">ROOM RENT &amp; TIFFIN SEARCH · LIVE ON PLAY STORE</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#5fd6a0">▹</span>Published Flutter app with responsive UI/UX across Android &amp; iOS</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#5fd6a0">▹</span>Login/Sign-up, Post services, Edit Posts, Call functionality and one-time Rating system</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#5fd6a0">▹</span>Dynamic data with <b style="color:#fff">Firestore</b>, secured by <b style="color:#fff">Firebase Auth</b>, GetX state management</li>
+        </ul>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">Flutter</span>
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">Firebase</span>
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">GetX</span>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px;margin-bottom:12px">
+        <span style="color:#7fe6a3;font-size:11px;font-weight:800;letter-spacing:.1em">02</span>
+        <div style="font-size:16px;font-weight:700;color:#fff;margin-top:3px">FixHR</div>
+        <div style="color:#7fe6a3;font-size:11px;letter-spacing:.06em;margin:2px 0 10px;font-weight:600">HR MANAGEMENT · PLAY STORE + APP STORE</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#5fd6a0">▹</span>Production HR app with real-time GPS tracking and 7+ employee workflow modules</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#5fd6a0">▹</span>BLoC + Freezed architecture with Socket.io, Maps SDK and Crashlytics</li>
+        </ul>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">Flutter</span>
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">BLoC</span>
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">Socket.io</span>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px">
+        <span style="color:#7fe6a3;font-size:11px;font-weight:800;letter-spacing:.1em">03</span>
+        <div style="font-size:16px;font-weight:700;color:#fff;margin-top:3px">Collegiate Backer</div>
+        <div style="color:#7fe6a3;font-size:11px;letter-spacing:.06em;margin:2px 0 10px;font-weight:600">CROWDFUNDING PLATFORM · SHIPPED</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#5fd6a0">▹</span>Full crowdfunding platform for athletes — design to release</li>
+          <li style="color:#c6c2d6;font-size:13px;line-height:1.5;padding-left:16px;position:relative"><span style="position:absolute;left:0;color:#5fd6a0">▹</span>Firebase Auth + Stripe payments for end-to-end secure transactions</li>
+        </ul>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:11px">
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">Flutter</span>
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">Firebase</span>
+          <span style="background:rgba(45,212,106,.12);color:#9fe8c0;border:1px solid rgba(45,212,106,.26);font-size:11px;padding:5px 10px;border-radius:8px;font-weight:600">Stripe</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div id="p-edu" class="panel" style="background:linear-gradient(180deg,#1a160c,#0b0b12)">
+    <div style="display:flex;justify-content:center;padding:10px 0 2px"><div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 20px 12px;flex:0 0 auto">
+      <button onclick="closePanel()" style="width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,176,32,.16);color:#ffd17a;font-size:22px;cursor:pointer;display:grid;place-items:center">‹</button>
+      <div style="display:flex;align-items:center;gap:9px"><span style="font-size:20px">🎓</span><span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">Education</span></div>
+    </div>
+    <div class="pbody" style="flex:1 1 auto;overflow-y:auto;padding:6px 22px 26px">
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:16px;margin-bottom:18px">
+        <div style="font-size:15px;font-weight:700;color:#fff">Guru Ghasidas Central University</div>
+        <div style="color:#ffd17a;font-size:11px;letter-spacing:.06em;margin:4px 0 10px;font-weight:600">BILASPUR, CHHATTISGARH &nbsp;·&nbsp; OCT 2020 – SEPT 2023</div>
+        <p style="margin:0;font-size:13px;color:#c6c2d6;line-height:1.55">Bachelor's degree, <b style="color:#fff">Computer Science &amp; Information Technology</b> (Honours)</p>
+      </div>
+      <div style="color:#ffd17a;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">Core areas</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px">
+        <span style="background:rgba(255,176,32,.1);color:#f4d49a;border:1px solid rgba(255,176,32,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Data Structures</span>
+        <span style="background:rgba(255,176,32,.1);color:#f4d49a;border:1px solid rgba(255,176,32,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">OOP</span>
+        <span style="background:rgba(255,176,32,.1);color:#f4d49a;border:1px solid rgba(255,176,32,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Database Systems</span>
+        <span style="background:rgba(255,176,32,.1);color:#f4d49a;border:1px solid rgba(255,176,32,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Operating Systems</span>
+        <span style="background:rgba(255,176,32,.1);color:#f4d49a;border:1px solid rgba(255,176,32,.24);font-size:12px;padding:6px 11px;border-radius:9px;font-weight:600">Computer Networks</span>
+      </div>
+      <div style="color:#ffd17a;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:8px">While studying</div>
+      <p style="color:#c6c2d6;font-size:14px;line-height:1.6">Started building Flutter apps in my final year and shipped <b style="color:#fff">Appixo</b> to the Play Store before graduating — practical experience that led directly into a professional Flutter role.</p>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div id="p-contact" class="panel" style="background:linear-gradient(180deg,#1a120c,#0b0b12)">
+    <div style="display:flex;justify-content:center;padding:10px 0 2px"><div style="width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.18)"></div></div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 20px 12px;flex:0 0 auto">
+      <button onclick="closePanel()" style="width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,106,61,.16);color:#ffac8a;font-size:22px;cursor:pointer;display:grid;place-items:center">‹</button>
+      <div style="display:flex;align-items:center;gap:9px"><span style="font-size:20px">✉️</span><span style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">Contact</span></div>
+    </div>
+    <div class="pbody" style="flex:1 1 auto;overflow-y:auto;padding:6px 22px 26px">
+      <div style="background:linear-gradient(135deg,rgba(124,92,255,.16),rgba(255,46,147,.12));border:1px solid rgba(124,92,255,.26);border-radius:16px;padding:14px;margin-bottom:18px">
+        <div style="color:#fff;font-weight:700;font-size:15px">Open to Flutter opportunities</div>
+        <div style="color:#c6c2d6;font-size:12px;margin-top:3px">Open to relocation · India</div>
+      </div>
+      <a href="mailto:manishsahu2609@gmail.com" style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,106,61,.16);display:grid;place-items:center;font-size:18px;flex:0 0 auto">📧</div>
+        <div><div style="font-size:10px;color:#8b88a3;letter-spacing:.1em;text-transform:uppercase">Email</div><div style="font-size:13px;color:#fff;margin-top:2px">manishsahu2609@gmail.com</div></div>
+      </a>
+      <a href="tel:+917389523175" style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(45,212,106,.16);display:grid;place-items:center;font-size:18px;flex:0 0 auto">📞</div>
+        <div><div style="font-size:10px;color:#8b88a3;letter-spacing:.1em;text-transform:uppercase">Mobile</div><div style="font-size:13px;color:#fff;margin-top:2px">+91 73895 23175</div></div>
+      </a>
+      <a href="https://linkedin.com/in/manish-sahu" target="_blank" style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(34,211,238,.16);display:grid;place-items:center;font-size:18px;flex:0 0 auto">🔗</div>
+        <div><div style="font-size:10px;color:#8b88a3;letter-spacing:.1em;text-transform:uppercase">LinkedIn</div><div style="font-size:13px;color:#fff;margin-top:2px">linkedin.com/in/manish-sahu</div></div>
+      </a>
+      <a href="https://github.com/Manishs2261" target="_blank" style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(124,92,255,.16);display:grid;place-items:center;font-size:18px;flex:0 0 auto">🐙</div>
+        <div><div style="font-size:10px;color:#8b88a3;letter-spacing:.1em;text-transform:uppercase">GitHub</div><div style="font-size:13px;color:#fff;margin-top:2px">github.com/Manishs2261</div></div>
+      </a>
+      <a href="https://manish2261.medium.com/" target="_blank" style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(45,212,106,.16);display:grid;place-items:center;font-size:18px;flex:0 0 auto">✍️</div>
+        <div><div style="font-size:10px;color:#8b88a3;letter-spacing:.1em;text-transform:uppercase">Medium</div><div style="font-size:13px;color:#fff;margin-top:2px">manish2261.medium.com</div></div>
+      </a>
+      <div style="display:flex;align-items:center;gap:14px;padding:13px 0">
+        <div style="width:42px;height:42px;border-radius:12px;background:rgba(255,176,32,.16);display:grid;place-items:center;font-size:18px;flex:0 0 auto">📍</div>
+        <div><div style="font-size:10px;color:#8b88a3;letter-spacing:.1em;text-transform:uppercase">Location</div><div style="font-size:13px;color:#fff;margin-top:2px">Bilaspur / Raipur, India</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /screen -->
+</div><!-- /phone -->
+
+<script>
+/* ── Live clock ─────────────────────────────────────────── */
+function tick() {
+  const d = new Date();
+  const t = d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('clk').textContent = t;
+}
+tick(); setInterval(tick, 1000);
+
+/* ── Panel open / close ─────────────────────────────────── */
+function openPanel(id) {
+  document.getElementById('p-' + id).classList.add('open');
+  phase = 'open';
+  resetDwell();
+  document.getElementById('dot').style.opacity = '0';
+}
+
+function closePanel() {
+  document.querySelectorAll('.panel.open').forEach(p => p.classList.remove('open'));
+  phase = 'idle';
+  ptr.lastMovedAt = Date.now();
+}
+
+/* ── Recalibrate ────────────────────────────────────────── */
+function recalibrate() {
+  const c = document.getElementById('calib');
+  c.style.opacity = '1'; c.style.pointerEvents = 'auto';
+  setTimeout(() => { c.style.opacity = '0'; c.style.pointerEvents = 'none'; }, 2400);
+}
+
+/* ── Dwell state machine ────────────────────────────────── */
+const DWELL_MS   = 1100;
+const STILL_MS   = 200;
+const MOVE_THR   = 5;
+const CIRC       = 339.292; // 2π × 54
+
+const field = document.getElementById('field');
+const dot   = document.getElementById('dot');
+const ring  = document.getElementById('ring');
+const arc   = document.getElementById('arc');
+const gx    = document.getElementById('gx');
+const gy    = document.getElementById('gy');
+
+let phase        = 'idle'; // idle | move | dwell | open
+let dwellingTile = null;
+let dwellStart   = 0;
+let rafId        = null;
+let ptr = { x: -999, y: -999, tile: null, lastMovedAt: 0, inside: false };
+
+/* Pointer tracking */
+field.addEventListener('pointermove', e => {
+  if (phase === 'open') return;
+
+  const r  = field.getBoundingClientRect();
+  const nx = e.clientX - r.left;
+  const ny = e.clientY - r.top;
+
+  dot.style.left    = nx + 'px';
+  dot.style.top     = ny + 'px';
+  dot.style.opacity = '1';
+
+  gx.textContent = Math.round(nx);
+  gy.textContent = Math.round(ny);
+
+  const dx = nx - ptr.x, dy = ny - ptr.y;
+  if (Math.sqrt(dx*dx + dy*dy) >= MOVE_THR) ptr.lastMovedAt = Date.now();
+  ptr.x = nx; ptr.y = ny;
+
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  ptr.tile = el ? el.closest('[data-tile]') : null;
+  ptr.inside = true;
+
+  if (!rafId) rafId = requestAnimationFrame(loop);
+});
+
+field.addEventListener('pointerleave', () => {
+  ptr.inside = false; ptr.tile = null;
+  dot.style.opacity = '0';
+  gx.textContent = '---'; gy.textContent = '---';
+  resetDwell();
+  phase = 'idle';
+});
+
+/* RAF dwell loop */
+function loop() {
+  rafId = null;
+  if (phase === 'open') return;
+
+  const now    = Date.now();
+  const stillMs = now - ptr.lastMovedAt;
+
+  if (ptr.inside && ptr.tile && stillMs >= STILL_MS) {
+
+    if (dwellingTile !== ptr.tile) {
+      resetDwell();
+      dwellingTile = ptr.tile;
+      dwellStart   = now;
+
+      /* Position ring on tile center */
+      const fr = field.getBoundingClientRect();
+      const tr = dwellingTile.getBoundingClientRect();
+      ring.style.left    = (tr.left + tr.width/2  - fr.left) + 'px';
+      ring.style.top     = (tr.top  + tr.height/2 - fr.top)  + 'px';
+      ring.style.opacity = '1';
+
+      /* Light up status dot */
+      const sd = dwellingTile.querySelector('[data-s]');
+      if (sd) { sd.style.background = dwellingTile.dataset.ac || '#7c5cff'; sd.style.opacity = '1'; }
+    }
+
+    const progress = Math.min((now - dwellStart) / DWELL_MS, 1);
+    arc.style.stroke          = dwellingTile.dataset.ac || '#7c5cff';
+    arc.style.strokeDashoffset = CIRC * (1 - progress);
+
+    if (progress >= 1) {
+      openPanel(dwellingTile.dataset.panel);
+      return;
+    }
+    phase = 'dwell';
+
+  } else if (dwellingTile) {
+    resetDwell();
+    phase = ptr.inside ? 'move' : 'idle';
+  }
+
+  if (ptr.inside) rafId = requestAnimationFrame(loop);
+}
+
+function resetDwell() {
+  if (dwellingTile) {
+    const sd = dwellingTile.querySelector('[data-s]');
+    if (sd) { sd.style.background = '#3a3a48'; sd.style.opacity = '.3'; }
+  }
+  dwellingTile = null;
+  dwellStart   = 0;
+  arc.style.strokeDashoffset = CIRC;
+  ring.style.opacity = '0';
+}
+</script>
+</body>
+</html>
