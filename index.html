@@ -63,9 +63,10 @@
     #sbar{padding:10px 20px 2px!important;}
     #hdr{padding:8px 18px 4px!important;}
     #field{margin:4px 8px 4px!important;padding:12px 10px 10px!important;}
-    #tgrid{gap:8px!important;overflow-y:auto;}
+    #field{display:flex!important;flex-direction:column!important;}
+    #tgrid{gap:8px!important;flex:1!important;height:0!important;align-content:stretch!important;}
     #ftr{padding:6px 18px 12px!important;}
-    [data-tile]{min-height:96px!important;padding:11px!important;}
+    [data-tile]{min-height:96px!important;padding:11px!important;height:100%!important;}
   }
 </style>
 </head>
