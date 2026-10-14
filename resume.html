@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manish Sahu - Resume | Flutter Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1e293b;
+      background: #f1f5f9;
+      line-height: 1.5;
+      padding: 40px 20px;
+    }
+    .print-bar {
+      max-width: 820px;
+      margin: 0 auto 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #0284c7;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+    .btn-secondary {
+      background: #fff;
+      color: #334155;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 1px solid #cbd5e1;
+    }
+    .resume-container {
+      max-width: 820px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 48px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    .resume-header {
+      border-bottom: 2px solid #0284c7;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .contact-item {
+      font-size: 0.9rem;
+      color: #475569;
+      font-weight: 500;
+    }
+    .links-bar {
+      margin-top: 8px;
+      display: flex;
+      gap: 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #0284c7;
+    }
+    .section-block {
+      margin-bottom: 22px;
+    }
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0284c7;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 0.92rem;
+      color: #334155;
+      text-align: justify;
+    }
+    .skills-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+    .skills-list strong {
+      color: #0f172a;
+    }
+    .job-entry {
+      margin-bottom: 16px;
+    }
+    .job-title-row {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: #0f172a;
+    }
+    .job-sub-row {
+      display: flex;
+      justify-content: space-between;
+      color: #64748b;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    ul.job-bullets {
+      list-style: disc;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 0.88rem;
+      color: #334155;
+    }
+    ul.job-bullets strong {
+      color: #0f172a;
+    }
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+      .print-bar {
+        display: none;
+      }
+      .resume-container {
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-bar">
+    <a href="index.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a>
+    <button onclick="window.print()" class="btn"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+  </div>
+
+  <main class="resume-container">
+    <header class="resume-header">
+      <div class="header-top">
+        <h1>Manish Sahu</h1>
+        <div class="contact-item">
+          <div>Email: <strong>manishsahu2609@gmail.com</strong></div>
+          <div>Mobile: <strong>+91 7389523175</strong></div>
+        </div>
+      </div>
+      <div class="links-bar">
+        <a href="https://www.linkedin.com/in/manishs2261/" target="_blank" style="color: #0284c7; text-decoration: none;">LinkedIn</a> • 
+        <a href="https://github.com/Manishs2261" target="_blank" style="color: #0284c7; text-decoration: none;">GitHub</a> • 
+        <a href="https://stackoverflow.com/users/18064892/manish-sahu?tab=profile" target="_blank" style="color: #0284c7; text-decoration: none;">Stack Overflow</a> • 
+        <a href="https://manish2261.medium.com/" target="_blank" style="color: #0284c7; text-decoration: none;">Medium</a>
+      </div>
+    </header>
+
+    <section class="section-block">
+      <h2 class="section-title">SUMMARY</h2>
+      <p>
+        <strong>Flutter Developer with 2.5+ years of experience</strong> building and maintaining cross-platform mobile applications using Flutter and Dart. Strong experience in BLoC-based state management, responsive UI development, reusable UI components, REST API integration, Firebase, real-time communication, and application performance optimization. Experienced in Android and iOS development, CI/CD, and production releases, with a focus on writing clean, maintainable, and scalable code.
+      </p>
+    </section>
+
+    <section class="section-block">
+      <h2 class="section-title">TECHNICAL SKILLS</h2>
+      <ul class="skills-list">
+        <li><strong>Programming Languages:</strong> Dart, Kotlin, Java, Swift</li>
+        <li><strong>Frameworks &amp; Mobile Development:</strong> Flutter, Responsive UI, Adaptive UI, Custom UI Components, Android, iOS</li>
+        <li><strong>State Management:</strong> BLoC, Cubit, GetX, Provider, Riverpod, Freezed</li>
+        <li><strong>API &amp; Backend Integration:</strong> REST APIs, Dio, Socket.IO, Firebase, Cloud Functions</li>
+        <li><strong>Firebase Services:</strong> Firebase Authentication, Cloud Messaging (FCM), Cloud Firestore, Firebase Storage, Crashlytics</li>
+        <li><strong>Architecture &amp; Development:</strong> Clean Architecture, MVC, MVVM, Component-driven Development, Reusable Components</li>
+        <li><strong>Databases &amp; Local Storage:</strong> MySQL, SQLite, SharedPreferences, Local Storage</li>
+        <li><strong>Integrations:</strong> Google Maps SDK, Push Notifications, Stripe, Socket.IO, Shorebird, get_it</li>
+        <li><strong>CI/CD &amp; Deployment:</strong> Git/GitHub, CI/CD, Google Play Console, Apple App Store Connect, Release Management</li>
+      </ul>
+    </section>
+
+    <section class="section-block">
+      <h2 class="section-title">EXPERIENCE</h2>
+
+      <div class="job-entry">
+        <div class="job-title-row">
+          <span>FixingDots</span>
+          <span>Raipur, Chhattisgarh</span>
+        </div>
+        <div class="job-sub-row">
+          <span>Flutter Developer - FixHR Employee Management App</span>
+          <span>Nov 2024 - Present</span>
+        </div>
+        <ul class="job-bullets">
+          <li>Developed cross-platform mobile features using <strong>Flutter and Dart</strong> for Android and iOS.</li>
+          <li>Built reusable and responsive UI components for features including <strong>calendar, leave/miss-punch, gate pass, travel &amp; daily allowance, and image composition</strong>.</li>
+          <li>Implemented scalable state management using <strong>BLoC and Freezed</strong>, improving code organization and maintainability.</li>
+          <li>Integrated <strong>REST APIs using Dio</strong>, along with Socket communication, Firebase Push Notifications, and Crashlytics.</li>
+          <li>Implemented <strong>real-time GPS tracking, Google Maps integration</strong>, location search, and distance-based calculations.</li>
+          <li>Identified and resolved critical production issues and optimized application performance to improve stability.</li>
+          <li>Collaborated with backend and cross-functional teams to integrate APIs and deliver production-ready features.</li>
+          <li>Managed Android and iOS production releases through <strong>Google Play Console and Apple App Store Connect</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="job-entry">
+        <div class="job-title-row">
+          <span>RiverHouse Technology</span>
+          <span>Bhilai, Chhattisgarh</span>
+        </div>
+        <div class="job-sub-row">
+          <span>Software Developer - Collegiate Backer, Crowdfunding Platform</span>
+          <span>Mar 2024 - Nov 2024</span>
+        </div>
+        <ul class="job-bullets">
+          <li>Developed responsive and reusable UI components using <strong>Flutter and Dart</strong> for Android and iOS applications.</li>
+          <li>Integrated <strong>Firebase Authentication, Cloud Firestore, and Firebase Storage</strong> for authentication, data management, and media storage.</li>
+          <li>Integrated <strong>REST APIs/backend services and Stripe payment</strong> functionality to support secure crowdfunding transactions.</li>
+          <li>Implemented application features based on product requirements while maintaining clean, reusable, and maintainable code.</li>
+          <li>Collaborated with the development team to debug issues, resolve application defects, and improve overall application quality and usability.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <h2 class="section-title">PROJECTS</h2>
+      <div class="job-entry">
+        <div class="job-title-row">
+          <span>Appixo - Room Rent Search App</span>
+          <span>
+            <a href="https://play.google.com/store/apps/details?id=com.manishsahu.myappixo.app&pcampaignid=web_share" target="_blank" style="color: #0284c7; text-decoration: none;">Play Store</a> &amp; 
+            <a href="https://github.com/Manishs2261" target="_blank" style="color: #0284c7; text-decoration: none;">GitHub</a>
+          </span>
+        </div>
+        <ul class="job-bullets">
+          <li>Developed responsive and interactive user interfaces using <strong>Flutter</strong>, ensuring smooth UI/UX across Android and iOS.</li>
+          <li>Managed application data using <strong>Firebase Firestore</strong>, including product details, user information, and dynamic content updates.</li>
+          <li>Implemented efficient state management with <strong>GetX</strong> to improve performance and maintainability.</li>
+          <li>Integrated secure user authentication and authorization using <strong>Firebase Authentication</strong>.</li>
+          <li>Built key features including Login/Sign-up, Forgot Password, Post Room/Tiffin Services, Edit User Posts, Call Functionality, One-time Rating System, and Rating Summary.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section-block">
+      <h2 class="section-title">EDUCATION</h2>
+      <div class="job-entry">
+        <div class="job-title-row">
+          <span>Guru Ghasidas Central University</span>
+          <span>Bilaspur, Chhattisgarh</span>
+        </div>
+        <div class="job-sub-row">
+          <span>Bachelor's degree, computer science and information technology (Honours)</span>
+          <span>Oct 2020 – Sept 2023</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
